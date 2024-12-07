@@ -1,5 +1,5 @@
 ---
 roles:
-  - geerlingguy.docker
+  - name: geerlingguy.docker
 collections:
   - name: ansible.posix
