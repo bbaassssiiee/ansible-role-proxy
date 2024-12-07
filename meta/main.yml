@@ -1,0 +1,25 @@
+---
+# https://docs.ansible.com/ansible/latest/galaxy/dev_guide.html
+galaxy_info:
+  author: Bas Meijer
+  description: Ansible role for a squid proxy in Docker
+  role_name: proxy
+  namespace: bbaassssiiee
+  license: MIT
+  min_ansible_version: "2.16"
+  platforms:
+    - name: EL
+      versions:
+        - "all"
+    - name: Ubuntu
+      versions:
+        - "all"
+    - name: Debian
+      versions:
+        - "all"
+
+  galaxy_tags:
+    - networking
+
+
+dependencies: []

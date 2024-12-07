@@ -1,0 +1,26 @@
+[Unit]
+# https://hub.docker.com/r/ubuntu/squid
+Description=Squid Proxy Server
+After=network.target syslog.target
+
+[Service]
+Type=simple
+TimeoutStartSec=5m
+ExecStartPre=-/usr/bin/docker stop %n
+ExecStartPre=-/usr/bin/docker rm %n
+
+ExecStart=/usr/bin/docker run --rm --name squid-proxy -p 3128:3128 \
+        -e TZ=UTC \
+        -v {{ proxy_home }}/squid.conf:/etc/squid/squid.conf:z \
+        -v {{ proxy_cache }}:/var/spool/squid:Z \
+        -v {{ proxy_log }}:/var/log/squid:Z \
+        ubuntu/squid
+
+ExecReload=-/usr/bin/docker stop "squid-proxy"
+ExecReload=-/usr/bin/docker rm   "squid-proxy"
+ExecStop=-/usr/bin/docker   stop "squid-proxy"
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
