@@ -1,4 +1,9 @@
 ---
+- name: Ensure python3-requests is installed
+  ansible.builtin.yum:
+    name: python3-requests
+    state: present
+
 - name: Ensure group exists
   ansible.builtin.group:
     name: "{{ proxy_group }}"
@@ -33,7 +38,7 @@
     state: present
     system: true
 
-- name: Ensure cache dirs exists
+- name: Ensure cache dirs exist
   ansible.builtin.file:
     path: "{{ proxy_cache }}/{{ item }}"
     state: directory
@@ -66,40 +71,6 @@
     group: "{{ proxy_group }}"
     mode: '0755'
 
-- name: Get service facts
-  ansible.builtin.service_facts:
-
-- name: Determine firewalld_state
-  ansible.builtin.set_fact:
-    # yamllint disable-line rule:line-length
-    firewalld_status: "{{ ansible_facts.services['firewalld.service']['status'] }}"
-
-- name: Ensure firewall is running
-  ansible.builtin.systemd:
-    name: firewalld
-    enabled: true
-    state: started
-
-- name: Manage proxy port in firewalld
-  ansible.posix.firewalld:
-    port: '{{ proxy_port }}/tcp'
-    permanent: true
-    state: enabled
-    immediate: true
-
-- name: Install unit file
-  ansible.builtin.template:
-    src: squid.service.j2
-    dest: "/usr/lib/systemd/system/squid.service"
-    mode: '0644'
-
-- name: Enable squid
-  ansible.builtin.systemd:
-    name: squid
-    daemon_reload: true
-    enabled: true
-  notify: Restart proxy
-
 - name: Deploy squid.conf
   ansible.builtin.template:
     src: squid.conf.j2
@@ -107,4 +78,24 @@
     owner: "{{ proxy_user }}"
     group: "{{ proxy_group }}"
     mode: '0644'
-  notify: Restart proxy
+
+- name: Install squid container
+  community.docker.docker_container:
+      name: "squid"
+      image: "ubuntu/squid"
+      env:
+        TZ: "UTC"
+      state: started
+      restart_policy: "always"
+      recreate: true # to make sure it's in it's latest state given it's checks
+      ports:
+      - "0.0.0.0:3128:3128"
+      volumes:
+        - "{{ proxy_home }}/squid.conf:/etc/squid/squid.conf:z"
+        - "{{ proxy_log }}:/var/log/squid:Z"
+        - "{{ proxy_cache }}:/var/spool/squid:Z"
+
+- name: Wait for port
+  ansible.builtin.wait_for:
+    port: "{{ proxy_port }}"
+    delay: 10
