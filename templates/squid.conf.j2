@@ -44,6 +44,26 @@ acl Safe_ports port 443		# https
 acl Safe_ports port 1025-65535	# unregistered ports
 acl CONNECT method CONNECT
 
+acl ALMALINUX dstdomain almalinux.org
+acl AZURE dstdomain westeurope.cloudapp.azure.com
+acl DOCKER dstdomain docker.io
+acl GHCR dstdomain ghcr.io
+acl GITHUB dstdomain github.com
+acl GOOGLE dstdomain storage.googleapis.com
+acl HELM dstdomain storage.googleapis.com
+acl K8S dstdomain k8s.io
+acl MICROSOFT dstdomain packages.microsoft.com
+acl QUAY dstdomain quay.io
+
+http_access allow ALMALINUX
+http_access allow AZURE
+http_access allow GHCR
+http_access allow GITHUB
+http_access allow GOOGLE
+http_access allow HELM
+http_access allow K8S
+http_access allow MICROSOFT
+
 # Only allow cachemgr access from localhost
 http_access allow localhost manager
 http_access deny manager
