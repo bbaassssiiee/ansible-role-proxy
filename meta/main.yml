@@ -23,3 +23,5 @@ galaxy_info:
 
 
 dependencies: []
+collections:
+  - community.docker

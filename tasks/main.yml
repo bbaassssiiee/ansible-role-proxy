@@ -1,6 +1,6 @@
 ---
 - name: Ensure python3-requests is installed
-  ansible.builtin.yum:
+  ansible.builtin.package:
     name: python3-requests
     state: present
 
@@ -81,19 +81,19 @@
 
 - name: Install squid container
   community.docker.docker_container:
-      name: "squid"
-      image: "ubuntu/squid"
-      env:
-        TZ: "UTC"
-      state: started
-      restart_policy: "always"
-      recreate: true # to make sure it's in it's latest state given it's checks
-      ports:
+    name: "squid"
+    image: "ubuntu/squid"
+    env:
+      TZ: "UTC"
+    state: started
+    restart_policy: "always"
+    recreate: true # to make sure it's in it's latest state given it's checks
+    ports:
       - "0.0.0.0:3128:3128"
-      volumes:
-        - "{{ proxy_home }}/squid.conf:/etc/squid/squid.conf:z"
-        - "{{ proxy_log }}:/var/log/squid:Z"
-        - "{{ proxy_cache }}:/var/spool/squid:Z"
+    volumes:
+      - "{{ proxy_home }}/squid.conf:/etc/squid/squid.conf:z"
+      - "{{ proxy_log }}:/var/log/squid:Z"
+      - "{{ proxy_cache }}:/var/spool/squid:Z"
 
 - name: Wait for port
   ansible.builtin.wait_for:
