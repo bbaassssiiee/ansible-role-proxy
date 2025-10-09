@@ -94,6 +94,8 @@
       - "{{ proxy_home }}/squid.conf:/etc/squid/squid.conf:z"
       - "{{ proxy_log }}:/var/log/squid:Z"
       - "{{ proxy_cache }}:/var/spool/squid:Z"
+    ulimits:
+      - 'nofile:16384:65535'
 
 - name: Wait for port
   ansible.builtin.wait_for:
