@@ -22,10 +22,6 @@
       gid: 42
     - group: utmp
       gid: 43
-    - group: crontab
-      gid: 101
-    - group: ssl-cert
-      gid: 102
 
 - name: Ensure user exists
   ansible.builtin.user:
