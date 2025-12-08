@@ -97,3 +97,18 @@
   ansible.builtin.wait_for:
     port: "{{ proxy_port }}"
     delay: 10
+
+- name: Add squid service to firewalld
+  ansible.builtin.firewalld:
+    service: squid
+    permanent: true
+    state: enabled
+    immediate: true
+    zone: public
+
+- name: Enable masquerading in public zone
+  ansible.posix.firewalld:
+    masquerade: true
+    permanent: true
+    state: enabled
+    zone: public
